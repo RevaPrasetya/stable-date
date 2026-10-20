@@ -17,7 +17,7 @@ struct HorseCardView: View {
             .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
             .shadow(color: Color.rose.opacity(0.18), radius: 20, y: 10)
             .accessibilityElement(children: .combine)
-            .accessibilityLabel("\(horse.name), \(horse.age) years, \(horse.breed)")
+            .accessibilityLabel("\(horse.name), \(Copy.age(horse.age)), \(horse.breed)")
             // The card is a photo: it looks the same in light and dark mode.
             .environment(\.colorScheme, .light)
     }
@@ -59,10 +59,10 @@ struct HorseCardView: View {
 
     private var chips: some View {
         HStack {
-            Label("\(distanceKm) km", systemImage: "mappin")
+            Label(Copy.distance(distanceKm), systemImage: "mappin")
                 .foregroundStyle(Color.ink)
             Spacer()
-            Label("\(matchPercent)%", systemImage: "heart.fill")
+            Label(Copy.matchPercent(matchPercent), systemImage: "heart.fill")
                 .foregroundStyle(Color.lavender)
         }
         .font(.subheadline.bold())

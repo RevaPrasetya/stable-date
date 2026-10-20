@@ -4,20 +4,20 @@ import SwiftUI
 struct DiscoverHeader: View {
     var body: some View {
         HStack {
-            HeaderButton(symbol: "chevron.left", label: "Back")
+            HeaderButton(symbol: "chevron.left", label: Copy.backLabel)
             Spacer()
             VStack(spacing: 2) {
-                Text("Discover")
+                Text(Copy.discoverTitle)
                     .font(.title.bold())
                     .foregroundStyle(Color.ink)
-                Text("Ubud, Bali")
+                Text(Copy.discoverLocation)
                     .font(.headline.weight(.regular))
                     .foregroundStyle(Color.inkSecondary)
             }
             .accessibilityElement(children: .combine)
             .accessibilityAddTraits(.isHeader)
             Spacer()
-            HeaderButton(symbol: "slider.horizontal.3", label: "Filters")
+            HeaderButton(symbol: "slider.horizontal.3", label: Copy.filterLabel)
         }
         .padding(.horizontal, 24)
         .padding(.top, 8)

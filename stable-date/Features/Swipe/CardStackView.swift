@@ -32,13 +32,13 @@ struct CardStackView: View {
         }
         .overlay(alignment: .bottomTrailing) {
             VStack(spacing: 12) {
-                SwipeButton(symbol: "xmark", tint: .plum, fill: .white, label: "Nope") {
+                SwipeButton(symbol: "xmark", tint: .plum, fill: .white, label: Copy.nopeLabel) {
                     if let top { swipe(top, liked: false) }
                 }
-                SwipeButton(symbol: "star.fill", tint: .lavender, fill: .lavenderSoft, label: "Super like") {
+                SwipeButton(symbol: "star.fill", tint: .lavender, fill: .lavenderSoft, label: Copy.superLikeLabel) {
                     if let top { swipe(top, liked: true) }
                 }
-                SwipeButton(symbol: "heart.fill", tint: .white, fill: .rose, label: "Like") {
+                SwipeButton(symbol: "heart.fill", tint: .white, fill: .rose, label: Copy.likeLabel) {
                     if let top { swipe(top, liked: true) }
                 }
             }

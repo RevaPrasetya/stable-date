@@ -19,7 +19,7 @@ struct LoadingView: View {
                     ProgressView()
                         .controlSize(.large)
                         .tint(Color.rose)
-                    Text("Rounding up horses...")
+                    Text(Copy.loadingTitle)
                         .font(.title3.weight(.semibold))
                         .foregroundStyle(Color.ink)
                 }

@@ -29,7 +29,7 @@ final class SwipeViewModel {
             let horses = try await service.fetchHorses()
             state = horses.isEmpty ? .empty : .loaded(horses)
         } catch {
-            state = .failed("The horses ran away. 🐎💨")
+            state = .failed(Copy.errorTitle)
         }
     }
 

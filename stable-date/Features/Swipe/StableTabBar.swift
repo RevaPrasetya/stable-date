@@ -6,8 +6,8 @@ struct StableTabBar: View {
 
     var body: some View {
         HStack {
-            tab("rectangle.stack.fill", label: "Discover", active: true)
-            tab("heart", label: "\(matchCount) matches", active: false)
+            tab("rectangle.stack.fill", label: Copy.discoverTitle, active: true)
+            tab("heart", label: Copy.matchesBadge(matchCount), active: false)
                 .overlay(alignment: .topTrailing) {
                     if matchCount > 0 {
                         Text("\(matchCount)")
@@ -20,8 +20,8 @@ struct StableTabBar: View {
                             .accessibilityHidden(true)
                     }
                 }
-            tab("bubble.left", label: "Messages", active: false)
-            tab("person", label: "Profile", active: false)
+            tab("bubble.left", label: Copy.messagesLabel, active: false)
+            tab("person", label: Copy.profileLabel, active: false)
         }
         .padding(.top, 12)
         .padding(.bottom, 4)

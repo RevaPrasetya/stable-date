@@ -10,20 +10,20 @@ struct MatchOverlayView: View {
             Spacer(minLength: 0)
             photos
                 .padding(.bottom, 36)
-            Text("CONGRATULATIONS")
+            Text(Copy.matchCaption)
                 .font(.subheadline.bold())
                 .tracking(4)
                 .foregroundStyle(Color.rose)
-            Text("It's a match!!")
+            Text(Copy.matchTitle)
                 .font(.largeTitle.bold())
                 .foregroundStyle(Color.ink)
             Text(bodyText(for: horse.name))
                 .font(.title3)
                 .foregroundStyle(Color.inkSecondary)
             Spacer(minLength: 0)
-            Button("Say hello", action: onDismiss)
+            Button(Copy.sayHelloButton, action: onDismiss)
                 .buttonStyle(MatchButtonStyle(filled: true))
-            Button("Keep trotting", action: onDismiss)
+            Button(Copy.matchButton, action: onDismiss)
                 .buttonStyle(MatchButtonStyle(filled: false))
         }
         .multilineTextAlignment(.center)
@@ -53,7 +53,7 @@ struct MatchOverlayView: View {
 
     /// "You and **name** are now trotting together." with the name in bold ink.
     private func bodyText(for name: String) -> AttributedString {
-        var text = (try? AttributedString(markdown: "You and **\(name)** are now trotting together.")) ?? AttributedString("You and **\(name)** are now trotting together.")
+        var text = (try? AttributedString(markdown: Copy.matchBody(name: name))) ?? AttributedString(Copy.matchBody(name: name))
         if let range = text.range(of: name) {
             text[range].foregroundColor = Color.ink
         }

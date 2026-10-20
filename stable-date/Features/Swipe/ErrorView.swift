@@ -16,11 +16,11 @@ struct ErrorView: View {
             Text(message)
                 .font(.title.bold())
                 .foregroundStyle(Color.ink)
-            Text("Check your connection and we'll round them up again.")
+            Text(Copy.errorBody)
                 .font(.title3)
                 .foregroundStyle(Color.inkSecondary)
             Button(action: onRetry) {
-                Text("Try again")
+                Text(Copy.errorButton)
                     .font(.headline)
                     .foregroundStyle(.white)
                     .padding(.horizontal, 36)
@@ -34,4 +34,4 @@ struct ErrorView: View {
     }
 }
 
-#Preview { ErrorView(message: "The horses ran away. 🐎💨") {} }
+#Preview { ErrorView(message: Copy.errorTitle) {} }

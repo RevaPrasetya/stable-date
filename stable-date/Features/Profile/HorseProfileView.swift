@@ -8,14 +8,14 @@ struct HorseProfileView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 HorseCardView(horse: horse)
-                Text("\(horse.age) years · \(horse.breed)")
+                Text("\(Copy.age(horse.age)) · \(horse.breed)")
                     .font(.title3.weight(.semibold))
                     .foregroundStyle(Color.inkSecondary)
                 Text(horse.bio)
                     .font(.body)
                     .foregroundStyle(Color.ink)
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Looking for")
+                    Text(Copy.profileLookingFor)
                         .font(.headline)
                         .foregroundStyle(Color.rose)
                     Text(horse.lookingFor)
