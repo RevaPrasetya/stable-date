@@ -3,7 +3,6 @@ import UIKit
 
 struct SwipeView: View {
     @State private var viewModel = SwipeViewModel()
-    @State var matches: [Horse] = []
     @State var showMatch = false
     @State var matchedName = ""
     @State var selectedHorse: Horse?
@@ -59,7 +58,9 @@ struct SwipeView: View {
                         }
                         .padding(.horizontal, 24)
                         .frame(maxHeight: .infinity, alignment: .top)
-                } else if !viewModel.horses.isEmpty {
+                } else if viewModel.horses.isEmpty {
+                    // nothing.
+                } else {
                     ZStack {
                         // the cards behind
                         if viewModel.horses.count > 2 {
@@ -133,14 +134,14 @@ struct SwipeView: View {
                 Image(systemName: "rectangle.stack.fill").font(.title2).foregroundStyle(Color.rose).frame(maxWidth: .infinity, minHeight: 44)
                 Image(systemName: "heart").font(.title2).foregroundStyle(Color.inkSecondary.opacity(0.6)).frame(maxWidth: .infinity, minHeight: 44)
                     .overlay(alignment: .topTrailing) {
-                        if matches.count > 0 {
-                            Text("\(matches.count)").font(.caption2.bold()).foregroundStyle(.white)
+                        if viewModel.matches.count > 0 {
+                            Text("\(viewModel.matches.count)").font(.caption2.bold()).foregroundStyle(.white)
                                 .padding(.horizontal, 6).padding(.vertical, 2)
                                 .background(Color.rose, in: Capsule())
                                 .offset(x: -18, y: 4)
                         }
                     }
-                    .accessibilityLabel("\(matches.count) matches")
+                    .accessibilityLabel("\(viewModel.matches.count) matches")
                 Image(systemName: "bubble.left").font(.title2).foregroundStyle(Color.inkSecondary.opacity(0.6)).frame(maxWidth: .infinity, minHeight: 44)
                 Image(systemName: "person").font(.title2).foregroundStyle(Color.inkSecondary.opacity(0.6)).frame(maxWidth: .infinity, minHeight: 44)
             }
@@ -149,12 +150,7 @@ struct SwipeView: View {
             .background { Rectangle().fill(.background).ignoresSafeArea(edges: .bottom) }
         }
         .background { Color.appBackground.ignoresSafeArea() }
-        .task {
-            guard let (data, _) = try? await URLSession.shared.data(from: LiveHorseService.defaultURL),
-                  let decoded = try? JSONDecoder().decode([Horse].self, from: data)
-            else { return }
-            viewModel.horses = decoded; viewModel.isLoading = false
-        }
+        .task { await viewModel.load() }
         .sheet(item: $selectedHorse) { horse in
             HorseProfileView(horse: horse)
         }
@@ -174,7 +170,7 @@ struct SwipeView: View {
                                 .overlay { RoundedRectangle(cornerRadius: 24, style: .continuous).strokeBorder(.white, lineWidth: 6) }
                                 .rotationEffect(.degrees(-9))
                                 .offset(x: -70, y: -24)
-                            Image(matches.last?.imageName ?? "horse-01").resizable().scaledToFill()
+                            Image(viewModel.matches.last?.imageName ?? "horse-01").resizable().scaledToFill()
                                 .frame(width: 160, height: 210)
                                 .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
                                 .overlay { RoundedRectangle(cornerRadius: 24, style: .continuous).strokeBorder(.white, lineWidth: 6) }
@@ -250,23 +246,12 @@ struct SwipeView: View {
             dragOffset = CGSize(width: right ? 600 : -600, height: -40)
             cardRotation = right ? 12 : -12
         } completion: {
-            if right {
-                like(horse)
-            } else {
-                nope(horse)
+            if viewModel.swipe(horse, liked: right) {
+                matchedName = horse.name
+                showMatch = true
             }
             refresh()
         }
-    }
-
-    func like(_ horse: Horse) {
-        viewModel.horses.removeAll { $0.id == horse.id }
-        if horse.likesYouBack { matches.append(horse); matchedName = horse.name; showMatch = true }
-    }
-
-    func nope(_ horse: Horse) {
-        viewModel.horses.removeAll { $0.id == horse.id }
-        if horse.likesYouBack { matches.append(horse); matchedName = horse.name; showMatch = true }
     }
 
     func refresh() {
