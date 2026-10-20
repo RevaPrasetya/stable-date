@@ -39,6 +39,7 @@ struct SwipeView: View {
             CardStackView(horses: horses, onSwipe: { handleSwipe($0, liked: $1) }, onTap: { presentedHorse = $0 })
         case .empty:
             EmptyDeckView(exhausted: viewModel.hasSwiped) { Task { await viewModel.load() } }
+        case .failed(let message): ErrorView(message: message) { Task { await viewModel.load() } }
         }
     }
 
