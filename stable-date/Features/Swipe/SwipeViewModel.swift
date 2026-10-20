@@ -1,29 +1,42 @@
 import Foundation
 import Observation
 
+/// Decides. Owns the screen's one and only state.
 @MainActor @Observable
 final class SwipeViewModel {
-    var horses: [Horse] = []
-    var isLoading = true
-    var errorMessage: String?               // 👀 remember these three
-    private(set) var matches: [Horse] = []
 
-    private let service = LiveHorseService() // 👀 remember this too
-
-    func load() async {
-        isLoading = true
-        errorMessage = nil
-        do {
-            horses = try await service.fetchHorses()
-        } catch {
-            errorMessage = "The horses ran away. 🐎💨"
-        }
-        isLoading = false
+    enum State: Equatable {
+        case loading
+        case loaded([Horse])
+        case empty
+        case failed(String)
     }
 
-    /// Returns true if it's a match.
+    private(set) var state: State = .loading
+    private(set) var matches: [Horse] = []
+    private(set) var hasSwiped = false
+
+    private let service = LiveHorseService()
+
+    func load() async {
+        state = .loading
+        hasSwiped = false
+        do {
+            let horses = try await service.fetchHorses()
+            state = horses.isEmpty ? .empty : .loaded(horses)
+        } catch {
+            state = .failed("The horses ran away. 🐎💨")
+        }
+    }
+
+    /// Removes the horse from the deck. Returns `true` if it's a match.
+    @discardableResult
     func swipe(_ horse: Horse, liked: Bool) -> Bool {
-        horses.removeAll { $0.id == horse.id }
+        guard case .loaded(var deck) = state else { return false }
+        deck.removeAll { $0.id == horse.id }
+        state = deck.isEmpty ? .empty : .loaded(deck)
+        hasSwiped = true
+
         guard liked, horse.likesYouBack else { return false }
         matches.append(horse)
         return true
