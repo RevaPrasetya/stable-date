@@ -1,43 +1,8 @@
 import SwiftUI
 import UIKit
 
-struct Horse: Identifiable, Decodable, Equatable {
-    var id: String
-    var name: String
-    var age: Int
-    var breed: String
-    var bio: String
-    var lookingFor: String
-    var imageName: String
-    var likesYouBack: Bool
-
-    enum CodingKeys: String, CodingKey {
-        case id
-        case name
-        case age
-        case breed
-        case bio
-        case lookingFor
-        case imageName
-        case likesYouBack
-    }
-
-    init(from decoder: Decoder) throws {
-        let c = try decoder.container(keyedBy: CodingKeys.self)
-        id = (try? c.decode(String.self, forKey: .id)) ?? UUID().uuidString
-        name = (try? c.decode(String.self, forKey: .name)) ?? "Horse"
-        age = (try? c.decode(Int.self, forKey: .age)) ?? 0
-        breed = (try? c.decode(String.self, forKey: .breed)) ?? ""
-        bio = (try? c.decode(String.self, forKey: .bio)) ?? ""
-        lookingFor = (try? c.decode(String.self, forKey: .lookingFor)) ?? ""
-        imageName = (try? c.decode(String.self, forKey: .imageName)) ?? ""
-        likesYouBack = (try? c.decode(Bool.self, forKey: .likesYouBack)) ?? false
-    }
-}
-
 struct SwipeView: View {
-    @State var horses: [Horse] = []
-    @State var isLoading = true
+    @State private var viewModel = SwipeViewModel()
     @State var matches: [Horse] = []
     @State var showMatch = false
     @State var matchedName = ""
@@ -47,16 +12,6 @@ struct SwipeView: View {
     @State var isAnimating = false
     @State var confettiVisible = false
     @State var confettiSeed = 0
-
-    static var horsesURL: URL {
-        #if DEBUG
-        if let override = ProcessInfo.processInfo.environment["STABLE_DATE_URL"],
-           let url = URL(string: override) {
-            return url
-        }
-        #endif
-        return URL(string: "https://raw.githubusercontent.com/revaprasetya/stable-date/main/Data/horses.json")!
-    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -92,7 +47,7 @@ struct SwipeView: View {
             .padding(.bottom, 16)
 
             ZStack {
-                if isLoading {
+                if viewModel.isLoading {
                     RoundedRectangle(cornerRadius: 32, style: .continuous)
                         .fill(Color.blush.opacity(0.7))
                         .aspectRatio(3/4, contentMode: .fit)
@@ -104,88 +59,24 @@ struct SwipeView: View {
                         }
                         .padding(.horizontal, 24)
                         .frame(maxHeight: .infinity, alignment: .top)
-                } else if !horses.isEmpty {
+                } else if !viewModel.horses.isEmpty {
                     ZStack {
                         // the cards behind
-                        if horses.count > 2 {
-                            Color.photoPink
-                                .aspectRatio(3/4, contentMode: .fit)
-                                .overlay { Image(horses[2].imageName).resizable().scaledToFill() }
-                                .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
+                        if viewModel.horses.count > 2 {
+                            HorseCardView(horse: viewModel.horses[2])
                                 .scaleEffect(0.92, anchor: .bottom)
                                 .offset(y: 16)
                         }
-                        if horses.count > 1 {
-                            Color.photoPink
-                                .aspectRatio(3/4, contentMode: .fit)
-                                .overlay { Image(horses[1].imageName).resizable().scaledToFill() }
-                                .overlay(alignment: .bottomLeading) {
-                                    LinearGradient(colors: [.clear, Color.ink.opacity(0.7)], startPoint: .top, endPoint: .bottom)
-                                        .frame(height: 160)
-                                }
-                                .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
-                                .shadow(color: Color.rose.opacity(0.18), radius: 20, y: 10)
+                        if viewModel.horses.count > 1 {
+                            HorseCardView(horse: viewModel.horses[1])
                                 .scaleEffect(0.96, anchor: .bottom)
                                 .offset(y: 8)
                         }
                         // the top card
-                        Color.photoPink
-                            .aspectRatio(3/4, contentMode: .fit)
-                            .overlay {
-                                if UIImage(named: horses[0].imageName) != nil {
-                                    Image(horses[0].imageName).resizable().scaledToFill()
-                                } else {
-                                    Image(systemName: "hare").font(.system(size: 96)).foregroundStyle(Color.ink.opacity(0.4))
-                                }
-                            }
-                            .overlay(alignment: .bottomLeading) {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text("\(horses[0].name), \(horses[0].age)")
-                                        .font(.title.bold())
-                                        .lineLimit(2)
-                                        .minimumScaleFactor(0.7)
-                                    Text("\(horses[0].breed) · \(horses[0].bio)")
-                                        .font(.subheadline)
-                                        .lineLimit(1)
-                                        .opacity(0.85)
-                                }
-                                .foregroundStyle(.white)
-                                .padding(.leading, 24)
-                                .padding(.trailing, 72)
-                                .padding(.top, 72)
-                                .padding(.bottom, 24)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .background { LinearGradient(colors: [.clear, Color.ink.opacity(0.7)], startPoint: .top, endPoint: .bottom) }
-                            }
-                            .overlay(alignment: .top) {
-                                HStack {
-                                    HStack(spacing: 6) {
-                                        Image(systemName: "mappin")
-                                        Text("\(horses[0].age % 4 + 1) km")
-                                    }
-                                    .foregroundStyle(Color.ink)
-                                    .padding(.horizontal, 14)
-                                    .padding(.vertical, 8)
-                                    .background(.ultraThinMaterial, in: Capsule())
-                                    Spacer()
-                                    HStack(spacing: 6) {
-                                        Image(systemName: "heart.fill")
-                                        Text("\(70 + (horses[0].age * 7) % 29)%")
-                                    }
-                                    .foregroundStyle(Color.lavender)
-                                    .padding(.horizontal, 14)
-                                    .padding(.vertical, 8)
-                                    .background(.ultraThinMaterial, in: Capsule())
-                                }
-                                .font(.subheadline.bold())
-                                .padding(16)
-                            }
-                            .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
-                            .shadow(color: Color.rose.opacity(0.18), radius: 20, y: 10)
-                            .environment(\.colorScheme, .light)
+                        HorseCardView(horse: viewModel.horses[0])
                             .offset(dragOffset)
                             .rotationEffect(.degrees(cardRotation))
-                            .onTapGesture { selectedHorse = horses[0] }
+                            .onTapGesture { selectedHorse = viewModel.horses[0] }
                             .gesture(
                                 DragGesture()
                                     .onChanged { value in
@@ -259,30 +150,13 @@ struct SwipeView: View {
         }
         .background { Color.appBackground.ignoresSafeArea() }
         .task {
-            guard let (data, _) = try? await URLSession.shared.data(from: Self.horsesURL),
+            guard let (data, _) = try? await URLSession.shared.data(from: LiveHorseService.defaultURL),
                   let decoded = try? JSONDecoder().decode([Horse].self, from: data)
             else { return }
-            horses = decoded; isLoading = false
+            viewModel.horses = decoded; viewModel.isLoading = false
         }
         .sheet(item: $selectedHorse) { horse in
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    Color.photoPink
-                        .aspectRatio(3/4, contentMode: .fit)
-                        .overlay { Image(horse.imageName).resizable().scaledToFill() }
-                        .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
-                    Text(horse.name).font(.largeTitle.bold()).foregroundStyle(Color.ink)
-                    Text("\(horse.age) years · \(horse.breed)").font(.title3.weight(.semibold)).foregroundStyle(Color.inkSecondary)
-                    Text(horse.bio).font(.body).foregroundStyle(Color.ink)
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Looking for").font(.headline).foregroundStyle(Color.rose)
-                        Text(horse.lookingFor).font(.body).foregroundStyle(Color.ink)
-                    }
-                }
-                .padding(24)
-            }
-            .background(Color.appBackground)
-            .presentationDragIndicator(.visible)
+            HorseProfileView(horse: horse)
         }
         .overlay {
             if showMatch {
@@ -368,10 +242,10 @@ struct SwipeView: View {
     }
 
     func handle(_ right: Bool) {
-        if isAnimating || horses.isEmpty { return }
+        if isAnimating || viewModel.horses.isEmpty { return }
         isAnimating = true
         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-        let horse = horses[0]
+        let horse = viewModel.horses[0]
         withAnimation(.easeOut(duration: 0.35)) {
             dragOffset = CGSize(width: right ? 600 : -600, height: -40)
             cardRotation = right ? 12 : -12
@@ -386,12 +260,12 @@ struct SwipeView: View {
     }
 
     func like(_ horse: Horse) {
-        horses.removeAll { $0.id == horse.id }
+        viewModel.horses.removeAll { $0.id == horse.id }
         if horse.likesYouBack { matches.append(horse); matchedName = horse.name; showMatch = true }
     }
 
     func nope(_ horse: Horse) {
-        horses.removeAll { $0.id == horse.id }
+        viewModel.horses.removeAll { $0.id == horse.id }
         if horse.likesYouBack { matches.append(horse); matchedName = horse.name; showMatch = true }
     }
 
