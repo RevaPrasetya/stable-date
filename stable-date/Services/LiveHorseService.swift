@@ -1,7 +1,7 @@
 import Foundation
 
 /// Fetches horses from the internet. The only type in the app that knows a URL exists.
-struct LiveHorseService {
+struct LiveHorseService: HorseService {
     static var defaultURL: URL {
         #if DEBUG
         if let override = ProcessInfo.processInfo.environment["STABLE_DATE_URL"],

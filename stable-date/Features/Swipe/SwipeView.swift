@@ -2,9 +2,13 @@ import SwiftUI
 
 /// Draws the screen for whatever state the ViewModel is in. Nothing else.
 struct SwipeView: View {
-    @State private var viewModel = SwipeViewModel()
+    @State private var viewModel: SwipeViewModel
     @State private var presentedHorse: Horse?
     @State private var matchedHorse: Horse?
+
+    init(viewModel: SwipeViewModel) {
+        self.viewModel = viewModel
+    }
 
     // MARK: - Body
 

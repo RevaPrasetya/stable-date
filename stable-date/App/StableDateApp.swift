@@ -4,7 +4,7 @@ import SwiftUI
 struct StableDateApp: App {
     var body: some Scene {
         WindowGroup {
-            SwipeView()
+            SwipeView(viewModel: SwipeViewModel())
         }
     }
 }
