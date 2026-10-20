@@ -4,6 +4,7 @@ import SwiftUI
 struct CardStackView: View {
     let horses: [Horse]
     let onSwipe: (Horse, Bool) -> Void
+    let onSuperLike: (Horse) -> Void
     let onTap: (Horse) -> Void
 
     @State private var dragOffset: CGSize = .zero
@@ -36,7 +37,7 @@ struct CardStackView: View {
                     if let top { swipe(top, liked: false) }
                 }
                 SwipeButton(symbol: "star.fill", tint: .lavender, fill: .lavenderSoft, label: Copy.superLikeLabel) {
-                    if let top { swipe(top, liked: true) }
+                    if let top { swipe(top, liked: true, superLike: true) }
                 }
                 SwipeButton(symbol: "heart.fill", tint: .white, fill: .rose, label: Copy.likeLabel) {
                     if let top { swipe(top, liked: true) }
@@ -68,14 +69,14 @@ struct CardStackView: View {
             }
     }
 
-    private func swipe(_ horse: Horse, liked: Bool) {
+    private func swipe(_ horse: Horse, liked: Bool, superLike: Bool = false) {
         guard !isAnimating else { return }
         isAnimating = true
         swipeCount += 1
         withAnimation(.easeOut(duration: 0.35)) {
             dragOffset = CGSize(width: liked ? 600 : -600, height: -40)
         } completion: {
-            onSwipe(horse, liked)
+            if superLike { onSuperLike(horse) } else { onSwipe(horse, liked) }
             dragOffset = .zero
             isAnimating = false
         }
@@ -107,4 +108,4 @@ private struct SwipeButton: View {
     }
 }
 
-#Preview { CardStackView(horses: Horse.samples, onSwipe: { _, _ in }, onTap: { _ in }).background(Color.appBackground) }
+#Preview { CardStackView(horses: Horse.samples, onSwipe: { _, _ in }, onSuperLike: { _ in }, onTap: { _ in }).background(Color.appBackground) }

@@ -40,7 +40,7 @@ struct SwipeView: View {
         case .loading:
             LoadingView()
         case .loaded(let horses):
-            CardStackView(horses: horses, onSwipe: { handleSwipe($0, liked: $1) }, onTap: { presentedHorse = $0 })
+            CardStackView(horses: horses, onSwipe: { handleSwipe($0, liked: $1) }, onSuperLike: { handleSuperLike($0) }, onTap: { presentedHorse = $0 })
         case .empty:
             EmptyDeckView(exhausted: viewModel.hasSwiped) { Task { await viewModel.load() } }
         case .failed(let message): ErrorView(message: message) { Task { await viewModel.load() } }
@@ -51,6 +51,12 @@ struct SwipeView: View {
 
     private func handleSwipe(_ horse: Horse, liked: Bool) {
         if viewModel.swipe(horse, liked: liked) {
+            matchedHorse = horse
+        }
+    }
+
+    private func handleSuperLike(_ horse: Horse) {
+        if viewModel.superLike(horse) {
             matchedHorse = horse
         }
     }

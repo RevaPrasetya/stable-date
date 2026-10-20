@@ -45,4 +45,15 @@ final class SwipeViewModel {
         matches.append(horse)
         return true
     }
+
+    /// Super like: always a match, as long as the horse is still in the deck.
+    @discardableResult
+    func superLike(_ horse: Horse) -> Bool {
+        guard case .loaded(var deck) = state, deck.contains(horse) else { return false }
+        deck.removeAll { $0.id == horse.id }
+        state = deck.isEmpty ? .empty : .loaded(deck)
+        hasSwiped = true
+        matches.append(horse)
+        return true
+    }
 }

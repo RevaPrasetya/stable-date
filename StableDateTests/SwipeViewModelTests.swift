@@ -59,6 +59,17 @@ struct SwipeViewModelTests {
         #expect(vm.matches.isEmpty)
     }
 
+    @Test func superLikeAlwaysMatches() async throws {
+        let vm = makeVM(.success(Horse.samples))
+        await vm.load()
+        let stranger = try #require(Horse.samples.first { !$0.likesYouBack })
+
+        let isMatch = vm.superLike(stranger)
+
+        #expect(isMatch)
+        #expect(vm.matches == [stranger])
+    }
+
     @Test func swipingTheLastHorseShowsEmptyState() async {
         let only = Horse.samples[0]
         let vm = makeVM(.success([only]))
