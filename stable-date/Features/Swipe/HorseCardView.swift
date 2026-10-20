@@ -85,3 +85,5 @@ private struct ChipLabelStyle: LabelStyle {
         .background(Color.white.opacity(0.5), in: Capsule())
     }
 }
+
+#Preview { HorseCardView(horse: Horse.samples[0]).padding() }

@@ -106,3 +106,5 @@ private struct SwipeButton: View {
         .accessibilityLabel(label)
     }
 }
+
+#Preview { CardStackView(horses: Horse.samples, onSwipe: { _, _ in }, onTap: { _ in }).background(Color.appBackground) }

@@ -29,3 +29,5 @@ struct HorseProfileView: View {
         .presentationDragIndicator(.visible)
     }
 }
+
+#Preview { HorseProfileView(horse: Horse.samples[0]) }

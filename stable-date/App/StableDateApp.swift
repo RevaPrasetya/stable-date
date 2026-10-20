@@ -4,7 +4,7 @@ import SwiftUI
 struct StableDateApp: App {
     var body: some Scene {
         WindowGroup {
-            SwipeView(viewModel: SwipeViewModel())
+            SwipeView(viewModel: SwipeViewModel(service: LiveHorseService()))
         }
     }
 }

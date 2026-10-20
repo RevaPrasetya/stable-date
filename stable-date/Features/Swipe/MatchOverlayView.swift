@@ -111,3 +111,5 @@ private struct MatchButtonStyle: ButtonStyle {
             .opacity(configuration.isPressed ? 0.8 : 1)
     }
 }
+
+#Preview { MatchOverlayView(horse: Horse.samples[0]) {} }

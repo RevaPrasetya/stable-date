@@ -55,3 +55,10 @@ struct SwipeView: View {
         }
     }
 }
+
+// MARK: - Previews
+
+#Preview("Loaded")  { SwipeView(viewModel: .init(service: MockHorseService(result: .success(Horse.samples)))) }
+#Preview("Empty")   { SwipeView(viewModel: .init(service: MockHorseService(result: .success([])))) }
+#Preview("Error")   { SwipeView(viewModel: .init(service: MockHorseService(result: .failure(URLError(.notConnectedToInternet))))) }
+#Preview("Loading") { SwipeView(viewModel: .init(service: MockHorseService(result: .success([]), delay: .seconds(999)))) }

@@ -16,7 +16,11 @@ final class SwipeViewModel {
     private(set) var matches: [Horse] = []
     private(set) var hasSwiped = false
 
-    private let service = LiveHorseService()
+    private let service: any HorseService
+
+    init(service: any HorseService) {
+        self.service = service
+    }
 
     func load() async {
         state = .loading
